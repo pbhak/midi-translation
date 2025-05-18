@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-
-  <body>
-    <h1>MIDI Devices</h1>
-    <% if (midiDevices.length == 0) { %>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <title>Document</title>
+</head>
+<body>
+  <h1>MIDI Devices</h1>
+  <% if (midiDevices.length === 0) { %>
     <p>Looks like you don't have any MIDI devices plugged in.</p>
-    <% } else { %>
-    <ul>
-      <% midiDevices.forEach(device => { %>
-      <li>
-        Device
-        <%= device.name %>
-        connected on MIDI port
-        <%= device.port %>
-      </li>
-      <% }) %>
-    </ul>
-    <% } %>
-  </body>
+  <% } else { %>
+    <% midiDevices.forEach(device => { %>
+      <div class="midi-device">
+        <p title="connected on MIDI port <%= device.port %>">
+          Device <code>
+            <%= device.name %>
+          </code>
+        </p>
+        <button onclick="window.location.href = '/device/<%= device.port %>'">Use this device</button>
+      </div>
+    <% }) %>
+  <% } %>
+</body>
 </html>

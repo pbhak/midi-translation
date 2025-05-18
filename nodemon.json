@@ -1,0 +1,6 @@
+{
+  "watch": ["src", "public"],
+  "ext": ".ts,.js,.ejs,.css",
+  "ignore": [],
+  "exec": "bun dev"
+}

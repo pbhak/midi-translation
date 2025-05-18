@@ -1,4 +1,4 @@
-import { Input } from "@julusian/midi";
+import { Input } from '@julusian/midi';
 
 type MIDIDevice = {
   /** Name of the MIDI device, as given by the underlying OS */
@@ -19,4 +19,8 @@ export function getMidiDevices(): MIDIDevice[] {
   midi.destroy();
 
   return devices;
+}
+
+export function getDeviceName(port: number): string {
+  return new Input().getPortName(port);
 }
