@@ -7,20 +7,16 @@ type MIDIDevice = {
   port: number;
 };
 
-const midi = new Input();
-const connectedDeviceCount = midi.getPortCount();
-
-// Exit if no MIDI devices found
-if (connectedDeviceCount === 0) {
-  console.log("No connected MIDI devices found. Exiting.");
-  process.exit(1);
-}
-
 export function getMidiDevices(): MIDIDevice[] {
+  const midi = new Input();
+  const connectedDeviceCount = midi.getPortCount();
+
   let devices: MIDIDevice[] = [];
   for (let port = 0; port < connectedDeviceCount; port++) {
     devices.push({ name: midi.getPortName(port), port });
   }
+
+  midi.destroy();
 
   return devices;
 }
