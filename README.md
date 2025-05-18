@@ -1,5 +1,7 @@
 # midi-translation
 
+![Hackatime Badge](https://hackatime-badge.hackclub.com/U07V1ND4H0Q/midi-translation)
+
 A translation layer that converts inbound MIDI signals to customizable outputs, such as:
   - Macros
   - Values on a QWERTY keyboard
