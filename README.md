@@ -8,16 +8,5 @@ A translation layer that converts inbound MIDI signals to customizable outputs, 
 
 ---
 
-To install dependencies:
-
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.2.9. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+## Running locally
+Install dependencies with `bun i`, create `.env` with a `PORT` variable containing your desired port for the server, and run the server with `bun dev`!
