@@ -15,7 +15,13 @@ server.get('/', (req, res) => {
 
 server.get('/device/:portNumber', (req, res) => {
   const port = parseInt(req.params.portNumber);
-  res.json({ portNumber: port, deviceName: getDeviceName(port) });
+  const deviceName = getDeviceName(port);
+
+  if (deviceName) {
+    res.json({ portNumber: port, deviceName: deviceName });
+  } else {
+    res.send(`<pre>Device ${port} does not exist</pre>`)
+  }
 });
 
 server.listen(port, () => console.log('Server started'));

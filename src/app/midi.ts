@@ -21,6 +21,6 @@ export function getMidiDevices(): MIDIDevice[] {
   return devices;
 }
 
-export function getDeviceName(port: number): string {
-  return new Input().getPortName(port);
+export function getDeviceName(port: number): string | null {
+  return (new Input().getPortName(port) || null);
 }
