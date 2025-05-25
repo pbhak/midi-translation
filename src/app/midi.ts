@@ -1,4 +1,5 @@
-import { Input } from '@julusian/midi';
+import { Input, type MidiMessage } from '@julusian/midi';
+import { EventEmitter } from 'events';
 
 type MIDIDevice = {
   /** Name of the MIDI device, as given by the underlying OS */
@@ -6,6 +7,13 @@ type MIDIDevice = {
   /** Port number of the device - this is used by the midi library to identify devices */
   port: number;
 };
+
+export type MIDIEvent = {
+  deltaTime: number;
+  message: number[];
+};
+
+export const eventEmitter = new EventEmitter();
 
 export function getMidiDevices(): MIDIDevice[] {
   const midi = new Input();
@@ -22,5 +30,25 @@ export function getMidiDevices(): MIDIDevice[] {
 }
 
 export function getDeviceName(port: number): string | null {
-  return (new Input().getPortName(port) || null);
+  return new Input().getPortName(port) || null;
+}
+
+export function listenOnPort(port: number): Input {
+  const midi = new Input();
+  console.log(`now listening on port ${port}`);
+
+  midi.on('message', (deltaTime, message) => {
+    const eventObject: MIDIEvent = { deltaTime, message };
+    eventEmitter.emit('midiMessage', eventObject);
+  });
+
+  try {
+    midi.openPort(port);
+  } catch (e) {
+    if ((e as Error).message === 'Internal RtMidi error') {
+      console.log('Too many requests');
+    }
+  }
+
+  return midi;
 }
