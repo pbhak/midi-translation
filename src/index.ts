@@ -7,6 +7,7 @@ import {
   type MIDIEvent,
 } from './app/midi';
 import type { Input } from '@julusian/midi';
+import { Note } from './app/note';
 
 const server = express();
 const port = process.env.PORT || 3000;
@@ -42,7 +43,10 @@ server.get('/midi-updates', (req, res) => {
 
   const deliverMessage = async (midiMessage: MIDIEvent) => {
     const messageFragment = await new Promise<string>((resolve, reject) => {
-      req.app.render('partials/midi-message', { midiMessage }, (err, html) => {
+      const note = new Note(midiMessage.deltaTime, midiMessage.message);
+      if (!note.noteOn()) return;
+
+      req.app.render('partials/midi-message', { note }, (err, html) => {
         if (err) {
           console.error('[DELIVER_MSG] req.app.render CALLBACK ERROR:', err);
           return reject(err);
@@ -51,9 +55,13 @@ server.get('/midi-updates', (req, res) => {
       });
     });
 
-    messageFragment
-      .split('\n')
-      .forEach((line) => res.write(`data: ${line}\n\n`));
+    messageFragment.split('\n').forEach((line) => {
+      const eventData = {
+        html: line,
+        id: Note.allNotes.length
+      }
+      res.write(`data: ${JSON.stringify(eventData)}\n\n`);
+    });
   };
 
   const messageListener = (midiData: MIDIEvent) => deliverMessage(midiData);

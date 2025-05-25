@@ -20,3 +20,11 @@ code {
   border-radius: 3%;
   display: inline-block;
 }
+
+.midi-note {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  border: 1px solid black;
+  padding: 6px;
+  margin: 5px;
+}

@@ -10,7 +10,7 @@ type MIDIDevice = {
 
 export type MIDIEvent = {
   deltaTime: number;
-  message: number[];
+  message: [number, number, number] | MidiMessage;
 };
 
 export const eventEmitter = new EventEmitter();
@@ -38,6 +38,7 @@ export function listenOnPort(port: number): Input {
   console.log(`now listening on port ${port}`);
 
   midi.on('message', (deltaTime, message) => {
+    if (message.length !==3) return;
     const eventObject: MIDIEvent = { deltaTime, message };
     eventEmitter.emit('midiMessage', eventObject);
   });

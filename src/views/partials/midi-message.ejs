@@ -1,5 +1,3 @@
-<div class="midi-message">
-  <hr>
-  <p>deltaTime: <code><%= midiMessage.deltaTime %></code></p>
-  <p>message: <code><%= midiMessage.message %></code></p>
-</div>
+<p data-noteId="<%= note.constructor.allNotes.length %>">Time since last event: <%= note.deltaTime %>s</p>
+<p data-noteId="<%= note.constructor.allNotes.length %>">Note: <%= note.fullNoteName() %></p>
+<p data-noteId="<%= note.constructor.allNotes.length %>">Velocity: <%= note.velocityPercent %>%</p>
