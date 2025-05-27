@@ -1,5 +1,6 @@
 export class Note {
   static allNotes: Note[] = [];
+  static sustain = false;
 
   deltaTime: number;
   statusByte: number;
@@ -19,12 +20,31 @@ export class Note {
     this.statusByte = midiData[0]!;
     this.noteNumber = midiData[1]!;
     this.velocity = midiData[2]!;
+    // Check if sustain pedal has been pressed/released
+    this.evaluateSustain();
+
     // Velocity as a percentage up to 2 decimal places
     this.velocityPercent = parseFloat(((this.velocity / 127) * 100).toFixed(2));
     this.useSharps = sharps;
     this.lastNote = Note.allNotes[Note.allNotes.length - 1];
 
     if (this.noteOn()) Note.allNotes.push(this);
+  }
+
+  evaluateSustain(): void {
+    if (this.statusByte >= 176 && this.statusByte <= 191 && this.noteNumber === 64) {
+      // Sustain pedal - toggle
+      if (this.velocity >= 64) {
+        Note.sustain = !Note.sustain;
+      }
+
+      // // Sustain pedal - normal
+      // if (this.velocity <= 63) {
+      //   Note.sustain = false;
+      // } else if (this.velocity >= 64) {
+      //   Note.sustain = true;
+      // }
+    }
   }
 
   noteName(): string {

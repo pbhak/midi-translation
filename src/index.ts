@@ -9,6 +9,7 @@ import {
   type MIDIEvent,
 } from './app/midi';
 import { Note } from './app/note';
+import { keyboard, Key } from '@nut-tree-fork/nut-js';
 
 const server = express();
 const port = process.env.PORT || 3000;
@@ -64,10 +65,10 @@ server.get('/midi-updates', (req, res) => {
           new Set(notes.map((note) => note.fullNoteName())).size
         ) {
           const chord = new Chord(notes);
-          console.log('chord detected!', chord.name);
+
           req.app.render('partials/chord', { chord }, (_err, html) => resolve(html));
         }
-      } else if (note.deltaTime > chordThresholdSeconds) {
+      } else {
         await Bun.sleep(chordThresholdSeconds * 1000);
         if (note.isPartOfChord) return;
 
@@ -80,6 +81,7 @@ server.get('/midi-updates', (req, res) => {
         html: line,
         id: isChord ? Chord.allChords.length : Note.allNotes.length,
         chord: isChord,
+        sustain: isChord ? Chord.sustain : Note.sustain,
       };
       res.write(`data: ${JSON.stringify(eventData)}\n\n`);
     });

@@ -3,6 +3,7 @@ import { Chord as ChordDetection } from 'chord-name';
 
 export class Chord {
   static allChords: Chord[] = [];
+  static sustain = false;
 
   notes: Note[];
   name: string = '';
@@ -17,6 +18,8 @@ export class Chord {
     ) {
       throw new Error('Keys must be unique');
     }
+
+    if (notes.every((note) => note.evaluateSustain())) Chord.sustain = true;
 
     let notesAsString: string = '';
 

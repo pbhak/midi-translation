@@ -3,6 +3,7 @@ const eventSource = new EventSource('/midi-updates');
 eventSource.onmessage = (event) => {
   const htmlData = JSON.parse(event.data).html;
   const id = JSON.parse(event.data).id;
+  const sustain = JSON.parse(event.data).sustain;
 
   let containerDiv = document.querySelector(`div[data-noteId='${id}']`);
   if (containerDiv) {
@@ -13,6 +14,10 @@ eventSource.onmessage = (event) => {
     containerDiv.classList.add('midi-note');
     containerDiv.innerHTML += htmlData;
     document.body.appendChild(containerDiv);
+  }
+
+  if (sustain) {
+    containerDiv.style.fontWeight = 'bold';
   }
 };
 
