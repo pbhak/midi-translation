@@ -1,6 +1,8 @@
-import { Key } from "@nut-tree-fork/nut-js";
+import { Key } from '@nut-tree-fork/nut-js';
+import { Note } from './note';
+import { Chord } from './chord';
 
-const keymap = {
+const keymapSharps = {
   C0: Key.A,
   'C#0': Key.B,
   D0: Key.C,
@@ -54,4 +56,24 @@ const keymapFlats = {
   Bb1: Key.W,
   B1: Key.X,
   C2: Key.Y,
+};
+
+export const mapKey = (
+  note: Note | Chord,
+  lowerOctave: number,
+  sharps: boolean = true,
+): Key | boolean | undefined => {
+  if (note instanceof Note) {
+    if (!(note.octave() >= lowerOctave && note.octave() <= lowerOctave + 2)) {
+      return false;
+    }
+
+    const noteName = `${note.noteName()}${note.octave() - lowerOctave}`;
+    console.log(noteName);
+    return sharps
+      ? keymapSharps[noteName as keyof typeof keymapSharps]
+      : keymapFlats[noteName as keyof typeof keymapFlats];
+  } else if (note instanceof Chord) {
+    return Key.Space
+  }
 };

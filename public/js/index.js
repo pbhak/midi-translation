@@ -6,6 +6,8 @@ eventSource.onmessage = (event) => {
   const sustain = JSON.parse(event.data).sustain;
 
   let containerDiv = document.querySelector(`div[data-noteId='${id}']`);
+  let sustainText = document.getElementById('sustain');
+
   if (containerDiv) {
     containerDiv.innerHTML += htmlData;
   } else {
@@ -18,6 +20,11 @@ eventSource.onmessage = (event) => {
 
   if (sustain) {
     containerDiv.style.fontWeight = 'bold';
+    sustainText.innerText = 'ON';
+    sustainText.style.fontWeight = 'bold';
+  } else {
+    sustainText.innerText = 'OFF';
+    sustainText.style.fontWeight = 'normal';
   }
 };
 
@@ -37,5 +44,21 @@ window.addEventListener('beforeunload', async () => {
 
   if (isTabClosing) {
     await fetch('/close-connection');
+  }
+});
+
+let pressedKeys = [];
+window.addEventListener('keydown', (e) => {
+  e.preventDefault();
+  if (e.code === 'Escadpe') {
+    pressedKeys = [];
+    document.querySelector('em').innerHTML = '';
+  } else if (!pressedKeys.includes(e.key)) {
+    pressedKeys.push(e.key);
+    if (document.querySelector('em').innerHTML === '') {
+      document.querySelector('em').innerHTML = `<code>${e.key}</code>`;
+    } else {
+      document.querySelector('em').innerHTML += ` + <code>${e.key}</code>`;
+    }
   }
 });

@@ -4,14 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" type="text/css" href="/css/style.css">
-  <script src="/js/midi.js" defer></script>
+  <script src="/js/index.js" defer></script>
   <title>Document</title>
 </head>
 <body>
   <h1>Listening on device <code><%= device.name %></code></h1>
+  <em></em><br>
   <em>tip: getting unexpected output? try adjusting your octave</em>
   <br><br>
   <button onclick="removeEvents()">Remove all events</button>
-  <br><br>
+  <br>
+  <p>sustain is <span id="sustain">OFF</span></p>
 </body>
 </html>

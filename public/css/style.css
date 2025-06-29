@@ -21,18 +21,10 @@ code {
   display: inline-block;
 }
 
-.midi-note {
+.midi-note, .midi-chord {
   display: grid;
   grid-template-columns: auto auto auto;
   border: 1px solid black;
   padding: 6px;
-  margin: 5px;
-}
-
-.midi-chord {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  border: 1px solid black;
-  padding: 6px;
-  margin: 5px;
+  margin: 5px 5px 0 5px;
 }

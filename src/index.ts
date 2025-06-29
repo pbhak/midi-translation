@@ -9,7 +9,8 @@ import {
   type MIDIEvent,
 } from './app/midi';
 import { Note } from './app/note';
-import { keyboard, Key } from '@nut-tree-fork/nut-js';
+import { mapKey } from './app/keymap';
+import { Key, keyboard } from '@nut-tree-fork/nut-js';
 
 const server = express();
 const port = process.env.PORT || 3000;
@@ -66,11 +67,27 @@ server.get('/midi-updates', (req, res) => {
         ) {
           const chord = new Chord(notes);
 
+          const mappedKey = mapKey(chord, 2);
+          if (typeof mappedKey === 'number') {
+            console.log('pressing key');
+            keyboard.pressKey(mappedKey);
+          } else if (!mappedKey) {
+            console.log('error occured while mapping key');
+          }
+
           req.app.render('partials/chord', { chord }, (_err, html) => resolve(html));
         }
       } else {
         await Bun.sleep(chordThresholdSeconds * 1000);
         if (note.isPartOfChord) return;
+
+        const mappedKey = mapKey(note, 2);
+        if (typeof mappedKey === 'number') {
+          console.log('pressing key');
+          keyboard.pressKey(mappedKey);
+        } else if (!mappedKey) {
+          console.log('error occured while mapping key');
+        }
 
         req.app.render('partials/note', { note }, (_err, html) => resolve(html));
       }
@@ -103,4 +120,4 @@ server.get('/close-connection', (_req, res) => {
   res.sendStatus(200);
 });
 
-server.listen(port, () => console.log(`started on port ${port}`));
+server.listen(port, () => console.log(`started on http://localhost:${port}`));
