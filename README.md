@@ -4,7 +4,7 @@
 
 ![Demo of project](assets/demo_short.gif)
 
-A translation program that converts inbound ![MIDI](https://en.wikipedia.org/wiki/MIDI) signals to user-defined keybindings.
+A translation program that converts inbound [MIDI](https://en.wikipedia.org/wiki/MIDI) signals to user-defined keybindings.
 - supports multiple MIDI devices plugged in simultaneously
 - allows addition and removal of keybindings, including keyboard shortcuts or individual keys
 
