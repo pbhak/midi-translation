@@ -15,10 +15,10 @@
   "dependencies": {
     "@julusian/midi": "^3.6.1",
     "@nut-tree-fork/nut-js": "^4.2.6",
-    "chord-name": "^3.1.0",
     "ejs": "^3.1.10",
     "express": "4",
-    "midi-translation": "."
+    "midi-translation": ".",
+    "tonal": "^6.4.2"
   },
   "scripts": {
     "dev": "bun --cwd src/ index"
