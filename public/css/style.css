@@ -28,3 +28,54 @@ code {
   padding: 6px;
   margin: 5px 5px 0 5px;
 }
+
+table {
+  width: 50%;
+}
+
+table, th, td {
+  border-collapse: collapse;
+  border: 1px solid black;
+}
+
+th, td {
+  padding: 10px;
+}
+
+.danger {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 10%;
+}
+
+.add {
+  background-color: #28a746;
+  color: white;
+  border: 0px solid black;
+  padding: 10px;
+}
+
+#keybind-add {
+  border: 1px solid black;
+  margin-top: 20px;
+  padding: 10px;
+  width: 50%;
+}
+
+#keybind-add h3 {
+  margin-top: 0;
+}
+
+input:invalid {
+  background-color: lightpink;
+}
+
+input[type=submit] {
+  font-family: inherit;
+  margin-top: 5px;
+}
+
+#keybind-warning {
+  display: none;
+}
