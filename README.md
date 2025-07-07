@@ -2,9 +2,15 @@
 
 ![Hackatime Badge](https://hackatime-badge.hackclub.com/U07V1ND4H0Q/midi-translation)
 
-A translation layer that converts inbound MIDI signals to customizable outputs, such as:
-  - Macros
-  - Values on a QWERTY keyboard
+![Demo of project](assets/demo_short.gif)
+
+A translation program that converts inbound ![MIDI](https://en.wikipedia.org/wiki/MIDI) signals to user-defined keybindings.
+- supports multiple MIDI devices plugged in simultaneously
+- allows addition and removal of keybindings, including keyboard shortcuts or individual keys
+
+Some things to note, however:
+- unrecognized chord sequences will default to a space
+- certain keybindings that are reserved by the system (e.g. Ctrl+Alt+Del) may not actuate properly
 
 ---
 
