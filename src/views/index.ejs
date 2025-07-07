@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" type="text/css" href="/css/style.css">
-  <title>Document</title>
+  <title>Home</title>
 </head>
 <body>
   <h1>MIDI Devices</h1>
   <% if (midiDevices.length === 0) { %>
     <p>Looks like you don't have any MIDI devices plugged in.</p>
+    <button onclick="window.location.href = '/customize'">Customize keymap</button>
   <% } else { %>
+    <button onclick="window.location.href = '/customize'">Customize keymap</button>
+    <br><br>
     <% midiDevices.forEach(device => { %>
       <div class="midi-device">
         <p title="connected on MIDI port <%= device.port %>">
