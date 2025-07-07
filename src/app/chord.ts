@@ -1,5 +1,5 @@
 import { Note } from './note';
-import { Chord as ChordDetection } from 'chord-name';
+import { Chord as ChordDetection } from 'tonal';
 
 export class Chord {
   static allChords: Chord[] = [];
@@ -29,7 +29,7 @@ export class Chord {
     });
     notesAsString = notesAsString.trim();
 
-    this.name = new ChordDetection(notesAsString).getNames()[0]!.name;
+    this.name = ChordDetection.detect(notesAsString.split(''))[0] ?? notesAsString.replaceAll(' ', ', ');
   }
 
   notesFormatted(): string[] {

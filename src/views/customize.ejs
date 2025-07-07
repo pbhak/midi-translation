@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <title>Customize</title>
+</head>
+<body>
+  <script defer>
+    async function handleRemoveMapping(element, note, key, value) {
+      element.parentNode.parentNode.remove();
+
+      await fetch('/remove-mapping', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ note: note, key, value }),
+      });
+    }
+
+    let listeningForKeys = false;
+    let pressedKeys = [];
+    let latestKeybind = [];
+
+    function keyListener(keyObject) {
+      keyObject.preventDefault();
+      if (!pressedKeys.includes(keyObject.code)) {
+        pressedKeys.push(keyObject.code);
+        if (document.getElementById('listened-keybind').innerHTML === '') {
+          document.getElementById('listened-keybind').innerHTML = `<code>${keyObject.key}</code>`;
+        } else {
+          document.getElementById('listened-keybind').innerHTML += ` + <code>${keyObject.key}</code>`;
+        }
+      }
+    }
+
+    function listenForKeyInput(button) {
+      if (listeningForKeys) {
+        listeningForKeys = false;
+        button.innerText = 'Start recording'
+        document.removeEventListener('keydown', keyListener);
+        latestKeybind = pressedKeys;
+        pressedKeys = []
+        document.getElementById('invalid-keybind').innerText = '';
+        document.getElementById('keybind-warning').style.display = 'none';
+        
+      } else {
+        listeningForKeys = true;
+        button.innerText = 'Stop recording';
+        document.getElementById('listened-keybind').innerText = ''
+        document.addEventListener('keydown', keyListener);
+        document.getElementById('keybind-warning').style.display = 'block';
+      }
+    }
+
+    function changeForm(checked) {
+      const keyForm = document.getElementById('key-form');
+      const chordForm = document.getElementById('chord-form');
+  
+      if (checked) {
+        keyForm.style.display = 'none';
+        chordForm.style.display = 'block';
+      } else {
+        chordForm.style.display = 'none';
+        keyForm.style.display = 'block';
+      }
+    }
+
+    async function validateChordName(chordName) {
+      if (chordName === '') {
+        document.getElementById('chord-name').setCustomValidity('');
+        return;
+      };
+
+      const validationRequest = await fetch(`/validate-chord?chordName=${encodeURIComponent(chordName)}`);
+      const isValid = await validationRequest.json();
+
+      if (!isValid) {
+        document.getElementById('chord-name').setCustomValidity('The chord name is invalid.')
+      } else {
+        document.getElementById('chord-name').setCustomValidity('')
+      }
+    }
+
+    async function handleFormSubmission(event, form) {
+      event.preventDefault();
+
+      // Keybind must have been recorded
+      if (latestKeybind.length === 0) {
+        document.getElementById('invalid-keybind').innerText = 'Please record a keybinding first!';
+        return;
+      } else {
+        document.getElementById('invalid-keybind').innerText = '';
+      }
+
+      const formData = new FormData(form)
+      const data = {}
+      formData.append('keybind', JSON.stringify(latestKeybind));
+
+      for(const entry of formData.entries()) {
+        data[entry[0]] = entry[1]
+      }
+
+      const result = await (await fetch('/add-mapping', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })).json();
+
+      console.log(result);
+    }
+  </script>
+
+  <h1>Customize Keymap</h1>
+  <button class="add">Add new</button>
+
+  <div id="keybind-add">  
+    <h3>Add key binding</h3>
+    <div id="key-select">
+      <label for="chord-select">Chord?</label>
+      <input type="checkbox" id="chord-select" name="chord-select" onchange="changeForm(this.checked)">
+
+      <form id="key-form" onsubmit="handleFormSubmission(event, this)">
+        <label for="key-name">Key name:</label>
+        <input type="text" id="key-name" name="key-name" pattern="^[a-gA-G]$">
+        <input type="number" id="octave-select" name="octave-select" min="0" max="9" placeholder="0">
+        <br>
+        <input type="submit" value="Add mapping">
+      </form>
+
+      <form id="chord-form" style="display: none;" onsubmit="handleFormSubmission(event, this)">
+        <label for="chord-name">Chord name:</label>
+        <input type="text" id="chord-name" name="chord-name" oninput="validateChordName(this.value)">
+        <br>
+        <input type="submit" value="Add mapping">
+      </form>
+
+      <br>
+      <button onclick="listenForKeyInput(this)" id="toggle-recording">Start recording</button>
+      
+      <div id="keybind-warning">
+        <br>
+        <em>
+          note: you may have to press each key individually, as some keybindings (like Alt+Tab or Ctrl+Alt+Delete) 
+          may be reserved by the system and won't be recorded if pressed together.
+        </em>
+      </div>
+      <p>Keybind: <span id="listened-keybind"></span></p>
+    </div>
+
+    <em id="invalid-keybind" style="color: red"></em>
+  </div>
+
+  <h2>Keys</h2>
+  <table>
+    <tr>
+      <th>Key name</th>
+      <th>Current binding</th>
+      <th>Edit</th>
+    </tr>
+    <% Object.entries(keymap).forEach(([keyName, bindingNumber]) => { %>
+      <tr>
+        <td><%= keyName %></td>
+        <td><code><%= keyNumbers[bindingNumber] %></code></td>
+        <td><button class="danger" onclick="handleRemoveMapping(this, true, '<%= keyName %>', '<%= bindingNumber %>')">x</button></td>
+      </tr>
+    <% }) %>
+  </table>
+  <h2>Chords</h2>
+  <table>
+    <tr>
+      <th>Chord name</th>
+      <th>Current binding</th>
+      <th>Edit</th>
+    </tr>
+    <% Object.entries(chordKeymap).forEach(([chordName, bindingNumbers]) => { %>
+      <tr>
+        <td><%= chordName %></td>
+        <td><code><%= bindingNumbers.map(binding => keyNumbers[binding]).join(' + ') %></code></td>
+        <td><button class="danger" onclick="handleRemoveMapping(this, false, '<%= chordName %>', [<%= bindingNumbers %>])">Remove</button></td>
+      </tr>
+    <% }) %>
+  </table>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import type { Input } from '@julusian/midi';
 import express from 'express';
 import { Chord } from './app/chord';
+import { Chord as ChordDetection } from 'tonal';
 import {
   eventEmitter,
   getDeviceName,
@@ -9,8 +10,9 @@ import {
   type MIDIEvent,
 } from './app/midi';
 import { Note } from './app/note';
-import { mapKey } from './app/keymap';
-import { Key, keyboard } from '@nut-tree-fork/nut-js';
+import { addMapping, keyNumbers, mapKey, removeMapping } from './app/keymap';
+import { keyboard } from '@nut-tree-fork/nut-js';
+import { join } from 'node:path';
 
 const server = express();
 const port = process.env.PORT || 3000;
@@ -20,11 +22,25 @@ const chordThresholdSeconds = 0.075;
 let currentMidi: Input;
 
 server.set('view engine', 'ejs');
+server.use(express.json());
 server.use(express.static('../public'));
 
 server.get('/', (_req, res) => {
   res.render('index', {
     midiDevices: getMidiDevices(),
+  });
+});
+
+server.get('/customize', async (_req, res) => {
+  const keymap = await Bun.file(join(import.meta.dir, '../data/keymap.json')).json();
+  const chordKeymap = await Bun.file(
+    join(import.meta.dir, '../data/chord-keymap.json'),
+  ).json();
+
+  res.render('customize', {
+    keymap: keymap,
+    chordKeymap,
+    keyNumbers,
   });
 });
 
@@ -67,10 +83,13 @@ server.get('/midi-updates', (req, res) => {
         ) {
           const chord = new Chord(notes);
 
-          const mappedKey = mapKey(chord, 2);
+          const mappedKey = await mapKey(chord, 2);
           if (typeof mappedKey === 'number') {
-            console.log('pressing key');
-            keyboard.pressKey(mappedKey);
+            console.log(`Attempting to type keycode ${mappedKey}`);
+            await keyboard.type(mappedKey);
+          } else if (Array.isArray(mappedKey)) {
+            console.log(`Attempting to type keyboard shortcut ${mappedKey}`);
+            await keyboard.type(...mappedKey);
           } else if (!mappedKey) {
             console.log('error occured while mapping key');
           }
@@ -81,12 +100,15 @@ server.get('/midi-updates', (req, res) => {
         await Bun.sleep(chordThresholdSeconds * 1000);
         if (note.isPartOfChord) return;
 
-        const mappedKey = mapKey(note, 2);
+        const mappedKey = await mapKey(note, 2);
         if (typeof mappedKey === 'number') {
-          console.log('pressing key');
-          keyboard.pressKey(mappedKey);
+          console.log(`Attempting to type keycode ${mappedKey}`);
+          await keyboard.type(mappedKey);
+        } else if (Array.isArray(mappedKey)) {
+          console.log(`Attempting to type keyboard shortcut ${mappedKey}`);
+          await keyboard.type(...mappedKey);
         } else if (!mappedKey) {
-          console.log('error occured while mapping key');
+          console.log('An error occured');
         }
 
         req.app.render('partials/note', { note }, (_err, html) => resolve(html));
@@ -118,6 +140,33 @@ server.get('/close-connection', (_req, res) => {
   currentMidi.destroy();
   console.log('Connection succesfully closed.');
   res.sendStatus(200);
+});
+
+server.get('/validate-chord', (req, res) => {
+  if (!req.query.chordName) res.sendStatus(400);
+  res.json(!ChordDetection.get(req.query.chordName as string).empty);
+});
+
+server.post('/remove-mapping', (req, res) => {
+  removeMapping(req.body.note, req.body.key, req.body.value);
+  res.sendStatus(200);
+});
+
+server.post('/add-mapping', async (req, res) => {
+  let result: boolean;
+  if (req.body['chord-name'] && !req.body['octave-select']) {
+    // Chord
+    result = await addMapping(false, req.body['chord-name'], JSON.parse(req.body.keybind));
+  } else {
+    // Note
+    result = await addMapping(
+      true,
+      req.body['key-name'] + req.body['octave-select'],
+      JSON.parse(req.body.keybind),
+    );
+  }
+
+  res.json(result);
 });
 
 server.listen(port, () => console.log(`started on http://localhost:${port}`));
