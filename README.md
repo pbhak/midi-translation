@@ -3,6 +3,7 @@
 ![Hackatime Badge](https://hackatime-badge.hackclub.com/U07V1ND4H0Q/midi-translation)
 
 ![Demo of project](assets/demo_short.gif)
+[want a longer demo?](https://youtu.be/WXUetCdzCwg)
 
 A translation program that converts inbound [MIDI](https://en.wikipedia.org/wiki/MIDI) signals to user-defined keybindings.
 - supports multiple MIDI devices plugged in simultaneously
@@ -15,4 +16,4 @@ Some things to note, however:
 ---
 
 ## Running locally
-Install dependencies with `bun i`, create `.env` with a `PORT` variable containing your desired port for the server, and run the server with `bun dev`!
+After cloning the repo, install dependencies with `bun i`, create a `.env` in the project root with a `PORT` variable containing your desired port for the server, and run the server with `bun dev`!
