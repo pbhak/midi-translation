@@ -22,6 +22,7 @@ Some things to note, however:
 2. When inside the directory, run `bun install` to install needed dependencies
 3. Create a file `.env` with the contents `PORT=[your desired port number]` (the port number doesn't maatter as long as it's not currently in use by another application)
 4. Run the server with `bun dev` (may take a while to start the first time)
+
 Eventually, you should get a message along the lines of `started on http://localhost:[port]` - going to this link will open the application in your browser
 
 From there, you can access the keymap by clicking `Customize keymap`, and you can run the translator via selecting a MIDI device from the homepage
